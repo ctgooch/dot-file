@@ -1,3 +1,5 @@
+http://www.sphinx-doc.org/en/stable/rest.html#rst-primer
+
 +---+--------------------------------+
 |fun|really                          |
 +===+================================+
