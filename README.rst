@@ -6,6 +6,14 @@
 ========================================
 Welcome to Learn Sphinx's documentation!
 ========================================
+.. toctree::
+    :maxdepth: 2
+    :numbered:
+    :titlesonly:
+    :glob:
+    :hidden:
+    moreinfo.rst
+
 
 .. contents:: Table of Contents
    :depth: 3
