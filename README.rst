@@ -7,11 +7,6 @@
 Welcome to Learn Sphinx's documentation!
 ========================================
 .. toctree::
-    :tocdepth: 2
-    :numbered:
-    :titlesonly:
-    :glob:
-    :hidden:
 
     moreinfo.rst
 
