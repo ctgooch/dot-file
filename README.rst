@@ -10,8 +10,15 @@ Welcome to Learn Sphinx's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-usage/installation
-usage/quickstart
+usage
+########
+
+correct
+********
+Incorrect
+********
+quickstart
+********
 
 Link to `Sphinx <http://www.sphinx-doc.org/en/stable/rest.html#rst-primer>`_
 thisis\ *one*\ word.
