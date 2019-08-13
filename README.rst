@@ -7,8 +7,11 @@
 Welcome to Learn Sphinx's documentation!
 ========================================
 .. toctree::
+    :maxdepth: 2
+    :titlesonly:
+    :glob:
 
-    moreinfo
+    *
 
 
 .. contents:: Table of Contents
