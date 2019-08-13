@@ -6,7 +6,7 @@
 ========================================
 Welcome to Learn Sphinx's documentation!
 ========================================
-.. toctree::
+.. toctree:: What
     :maxdepth: 2
     :titlesonly:
     :glob:
