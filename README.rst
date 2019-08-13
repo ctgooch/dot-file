@@ -11,7 +11,9 @@ Welcome to Learn Sphinx's documentation!
     :titlesonly:
     :glob:
 
-    *
+    https://github.com/ctgooch/dot-file/blob/master/moreinfo.rst
+
+    
 
 
 .. contents:: Table of Contents
