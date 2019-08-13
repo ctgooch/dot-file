@@ -8,7 +8,7 @@ Welcome to Learn Sphinx's documentation!
 ========================================
 .. toctree::
 
-    moreinfo.rst
+    moreinfo
 
 
 .. contents:: Table of Contents
