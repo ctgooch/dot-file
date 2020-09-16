@@ -1,6 +1,6 @@
 # Xmonad
 These files are linked back from the repository clone directory
-to ~/.xmonad/
+to `~/.xmonad/`
 
 
-`<ln -s <path>/dot-files/xmonad/<file>>` ~/.xmonad/
+`ln -s <path>/dot-files/xmonad/<file> ~/.xmonad/`
