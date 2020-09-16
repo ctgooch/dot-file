@@ -1,8 +1,3 @@
-# dot-file
-+---+--------------------------------+
-|date|Comment                         |
-+===+================================+
-|2016|Looking at documentation schemes|
-+---+--------------------------------+
-|2019|iFinally got back to this              |
-+---+--------------------------------+
+# Xmonad
+So I have these 3 currently linked back from the repository clone.
+ln -s <path>/dot-files/xmonad/<file> ~/.xmonad/

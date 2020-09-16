@@ -1,0 +1,100 @@
+Config {
+
+   -- appearance
+     font =         "xft:roboto condensed:size=14:antialias=true"
+     additionalFonts = [
+                        "xft:roboto condensed:size=12:antialias=true"
+                       ,"xft:FontAwesome:pixelsize=16" 
+                       ]
+--     font =         "xft:Bitstream Vera Sans Mono:size=24:bold:antialias=true"
+   , bgColor =      "#1B1D1E"
+   , fgColor =      "#00ffff"
+   , position =     Top --W L
+--   , position =    Left
+   , border =       BottomB
+   , borderColor =  "#00ffff"
+   , iconRoot = "/home/tgooch/.xmonad/resources/dotfiles/.xmonad/dzen2/" -- default: "."
+--   , allDesktops = True
+   -- layout
+   , sepChar =  "%"   -- delineator between plugin names and straight text
+   , alignSep = "}{"  -- separator between left-right alignment
+   , template = "<fc=#ebac54>[</fc> %StdinReader% <fc=#ebac54>][</fc> %locks% <fc=#ebac54>][</fc> %default:Master% <fc=#ebac54>][</fc> %multicpu% <fc=#ebac54>][</fc> %memory% <fc=#ebac54>][</fc> %wlp3s0% <fc=#ebac54>]</fc>}{<fc=#ebac54>[</fc>%mpipe%<fc=#ebac54>][</fc>%KOMH%<fc=#ebac54>][ </fc>%date%<fc=#ebac54>]</fc>    "
+
+   -- general behavior
+   , lowerOnStart =     False    -- send to bottom of window stack on start
+   , hideOnStart =      False   -- start with window unmapped (hidden)
+   , allDesktops =      True
+   , overrideRedirect = False    -- set the Override Redirect flag (Xlib)
+   , pickBroadest =     False   -- choose widest display (multi-monitor)
+   , persistent =       True    -- enable/disable hiding (True = disabled)
+
+   -- plugins
+   --   Numbers can be automatically colored according to their value. xmobar
+   --   decides color based on a three-tier/two-cutoff system, controlled by
+   --   command options:
+   --     --Low sets the low cutoff
+   --     --High sets the high cutoff
+   --
+   --     --low sets the color below --Low cutoff
+   --     --normal sets the color between --Low and --High cutoffs
+   --     --High sets the color above --High cutoff
+   --
+   --   The --template option controls how the plugin is displayed. Text
+   --   color can be set by enclosing in <fc></fc> tags. For more details
+   --   see http://projects.haskell.org/xmobar/#system-monitor-plugins.
+   , commands =
+
+        -- weather monitor
+        [    
+
+
+        -- cpu activity monitor
+        Run MultiCpu       [ "--template" , "<fc=#e8f40d><fn=2>\xf1e2</fn></fc>: <total0>%|<total1>%"
+                             , "--Low"      , "50"         -- units: %
+                             , "-p"      , "3"         -- units: %
+                             , "--High"     , "85"         -- units: %
+                             , "--low"      , "darkgreen"
+                             , "--normal"   , "darkorange"
+                             , "--high"     , "darkred"
+                             ] 10
+
+        , Run Network "wlp3s0" ["-t"
+                               ,"   <rx><fn=2>\xf0dd</fn>   <tx><fn=2>\xf0de</fn>"
+                               ,"-H","200"
+                               ,"-L","10"
+                               ,"-h","#FFB6B0"
+                               ,"-l","#CEFFAC"
+                               ,"-n","#FFFFCC"
+                               ] 10
+
+        -- stdinread
+        , Run StdinReader
+        -- memory usage monitor
+        , Run Memory         [ "--template" ,"<fn=2>\xf1c0</fn><usedratio>%"
+                             , "--Low"      , "20"        -- units: %
+                             , "--High"     , "90"        -- units: %
+                             , "--low"      , "darkgreen"
+                             , "--normal"   , "darkorange"
+                             , "--high"     , "darkred"
+                             ] 10
+
+        -- time and date indicator
+        --   (%F = y-m-d date, %a = day of week, %T = h:m:s time)
+        , Run Date           "%F (%a) %T" "date" 10
+        -- Volume indicator
+        , Run Volume "default" "Master" [ "-t"
+                                        , "<status> <volume>%"
+																				] 60
+        , Run PipeReader    "/home/tgooch/marquee.pipe" "mpipe" 
+        , Run Locks
+        , Run Weather "KOMH"
+         [ "-t", "<fc=#00ffff><station>: <tempF>°F<fc=#ebac54>][</fc><windMph> in <windCardinal><fc=#ebac54>][</fc><visibility><fc=#ebac54>][</fc><dewPointF><fc=#ebac54>][</fc><skyCondition><fc=#ebac54>][</fc><rh><fc=#ebac54>][</fc><pressure></fc>"
+         , "-L", "40"
+         , "-H", "91"
+         , "--normal", "green"
+         , "--high", "red"
+         , "--low", "lightblue"
+         ] 36000
+
+        ]
+   }
