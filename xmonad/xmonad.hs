@@ -190,6 +190,7 @@
       --tallRationIncrement   = 1/100
       --tallRatio  = 1/100
 -- numMasters, resizeIncr, splitRatio
+      grid = Grid
       resizableTile  = ResizableTall nmaster delta xatio []
 -- The default number of windows in the master pane
       nmaster = 1
@@ -199,9 +200,9 @@
       xatio   = 3/5
       -- notice that withIM, which normally acts on one layout, can also 
       -- work on a list of layouts (yay recursive data types!)
-      imLayout        =  withIM iratio rosters resizableTile where
+      imLayout        =  withIM iratio pidginRoster grid where
        iratio          = 11%100
-       rosters        = pidginRoster 
+--       rosters        = pidginRoster 
        pidginRoster   = (ClassName "Pidgin") `And` (Role "buddy_list")
        chatLayout     = Grid
  
@@ -246,6 +247,7 @@
            , ppLayout            =   (\x -> case x of
                                      "ResizableTall"        ->      "RTall"
                                      "IM ResizableTall"     ->      "IM"
+                                     "IM Grid"     ->      "IM"
                                      "Mirror ResizableTall" ->      "Mir"
                                      "Full"                 ->      "Full"
                                      "Simple Float"         ->      "~"
@@ -362,7 +364,7 @@
  warpToCentre = gets (S.screen . S.current . windowset) >>= \x -> warpToScreen x  0.5 0.5
  main = do
     xmprocS <- spawnPipe "/usr/bin/python ~/newsun.py > /home/tgooch/sun.pipe"
-    xmprocX <- spawnPipe "echo 'September 22, 2020 9:30 Equinox' > marquee.pipe"
+    xmprocX <- spawnPipe "echo 'December 22, 2020 5:02 Solstice' > marquee.pipe"
     xmproc0 <- spawnPipe "xmobar -x0 ~/.xmonad/center.xmobarrc"
     xmproc1 <- spawnPipe "xmobar -x1 ~/.xmonad/right.xmobarrc"
     xmproc2 <- spawnPipe "xmobar -x2 ~/.xmonad/left.xmobarrc"

@@ -18,7 +18,7 @@ Config {
    -- layout
    , sepChar =  "%"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment
-   , template = "<fc=#ebac54>[</fc> %StdinReader% <fc=#ebac54>][</fc> %locks% <fc=#ebac54>][</fc> %default:Master% <fc=#ebac54>][</fc> %multicpu% <fc=#ebac54>][</fc> %memory% <fc=#ebac54>][</fc> %wlp3s0% <fc=#ebac54>]</fc>}{<fc=#ebac54>[</fc>%mpipe%<fc=#ebac54>][</fc>%KOMH%<fc=#ebac54>][ </fc>%date%<fc=#ebac54>]</fc>    "
+   , template = "<fc=#ebac54>[</fc> %StdinReader% <fc=#ebac54>][</fc> %locks% <fc=#ebac54>][</fc> %default:Master% <fc=#ebac54>][</fc> %multicpu% <fc=#ebac54>][</fc> %memory% <fc=#ebac54>][</fc> %wlp3s0% <fc=#ebac54>]</fc>}{<fc=#ebac54>[</fc>%mpipe%<fc=#ebac54>][</fc>%KOMH%<fc=#ebac54>][ </fc>%date%<fc=#ebac54>]</fc>"
 
    -- general behavior
    , lowerOnStart =     False    -- send to bottom of window stack on start
@@ -49,9 +49,12 @@ Config {
 
 
         -- cpu activity monitor
-        Run MultiCpu       [ "--template" , "<fc=#e8f40d><fn=2>\xf1e2</fn></fc>: <total0>%|<total1>%"
+        Run MultiCpu       [ "--template" , "<fn=1><fc=#e8f40d><fn=2>\xf1e2</fn></fc>: <total0> %|<total1> %</fn>"
                              , "--Low"      , "50"         -- units: %
-                             , "-p"      , "3"         -- units: %
+                             , "--ppad"      , "5"         -- units: %
+                             , "-c"      , "."
+                             , "-w"      , "5"         -- units: %
+                             , "-m"      , "6"         -- units: %
                              , "--High"     , "85"         -- units: %
                              , "--low"      , "darkgreen"
                              , "--normal"   , "darkorange"
@@ -70,12 +73,13 @@ Config {
         -- stdinread
         , Run StdinReader
         -- memory usage monitor
-        , Run Memory         [ "--template" ,"<fn=2>\xf1c0</fn><usedratio>%"
+        , Run Memory         [ "--template" ,"<fn=2>\xf1c0</fn><fn=1><usedratio>%</fn>"
                              , "--Low"      , "20"        -- units: %
                              , "--High"     , "90"        -- units: %
-                             , "--low"      , "darkgreen"
-                             , "--normal"   , "darkorange"
-                             , "--high"     , "darkred"
+                             , "--low"      , "blue"
+                             , "--normal"   , "green"
+                             , "--high"     , "red"
+                             , "-p"         , "3"
                              ] 10
 
         -- time and date indicator
@@ -87,14 +91,13 @@ Config {
 																				] 60
         , Run PipeReader    "/home/tgooch/marquee.pipe" "mpipe" 
         , Run Locks
-        , Run Weather "KOMH"
-         [ "-t", "<fc=#00ffff><station>: <tempF>°F<fc=#ebac54>][</fc><windMph> in <windCardinal><fc=#ebac54>][</fc><visibility><fc=#ebac54>][</fc><dewPointF><fc=#ebac54>][</fc><skyCondition><fc=#ebac54>][</fc><rh><fc=#ebac54>][</fc><pressure></fc>"
-         , "-L", "40"
-         , "-H", "91"
-         , "--normal", "green"
-         , "--high", "red"
-         , "--low", "lightblue"
-         ] 36000
+        , Run Weather "KOMH" [ "-t", "<fc=#00ffff><station>: <tempF>°F<fc=#ebac54>][</fc><windMph> in <windCardinal><fc=#ebac54>][</fc><visibility><fc=#ebac54>][</fc><dewPointF><fc=#ebac54>][</fc><skyCondition><fc=#ebac54>][</fc><rh><fc=#ebac54>][</fc><pressure></fc>"
+                             , "-L"           , "40"
+                             , "-H"           , "91"
+                             , "--normal"     , "green"
+                             , "--high"       , "red"
+                             , "--low"        , "#4666FF"
+                             ] 36000
 
         ]
    }
