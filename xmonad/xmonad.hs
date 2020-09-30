@@ -40,15 +40,17 @@
  import XMonad.Layout.Grid
  import XMonad.Layout.IM
  import XMonad.Layout.LayoutCombinators
- import XMonad.Layout.LayoutCombinators (JumpToLayout (..), (|||))
+-- import XMonad.Layout.LayoutCombinators (JumpToLayout (..), (|||))
  import XMonad.Layout.LayoutHints
  import XMonad.Layout.LayoutModifier
  import XMonad.Layout.NoBorders
+ import XMonad.Layout.TwoPane
  import XMonad.Layout.PerWorkspace
  import XMonad.Layout.ResizableTile
  import XMonad.Layout.Tabbed
  import XMonad.Prompt
  import XMonad.Prompt.Input
+ import XMonad.Prompt.AppendFile
  import XMonad.Prompt.RunOrRaise
  import XMonad.Prompt.Ssh
  import XMonad.Prompt.Window
@@ -182,29 +184,26 @@
 -- Set up the Layout Hook
 ----------------------------------------------------------------------------------------------       
 -- myLayout = onWorkspace "4:I" imLayout $ smartBorders $(resizableTile XMonad.Layout.LayoutCombinators.||| Mirror resizableTile XMonad.Layout.LayoutCombinators.||| Full)
- myLayout = smartBorders $(zoomy XMonad.Layout.LayoutCombinators.||| imLayout XMonad.Layout.LayoutCombinators.||| resizableTile XMonad.Layout.LayoutCombinators.||| Mirror resizableTile XMonad.Layout.LayoutCombinators.||| Full XMonad.Layout.LayoutCombinators.||| Grid)
+ myLayout = smartBorders $(resizableTile XMonad.Layout.LayoutCombinators.||| zoomy XMonad.Layout.LayoutCombinators.||| imLayout XMonad.Layout.LayoutCombinators.||| power XMonad.Layout.LayoutCombinators.||| Grid XMonad.Layout.LayoutCombinators.||| v50 XMonad.Layout.LayoutCombinators.||| h50)
   where
-      zoomy = tabbed shrinkText myTabConfig
-      --xoomy   = Tall tallNMaster tallRationIncrement tallRatio 
-      --tallNMaster = 1
-      --tallRationIncrement   = 1/100
-      --tallRatio  = 1/100
+   zoomy         = noBorders (tabbed shrinkText myTabConfig)
+   power         = noBorders (Full)
+   v50           = TwoPane zdelta zratio
+   h50           = Mirror v50
+   zdelta        = 3/100
+   zratio        = 1/2
+   grid          = Grid
 -- numMasters, resizeIncr, splitRatio
-      grid = Grid
-      resizableTile  = ResizableTall nmaster delta xatio []
--- The default number of windows in the master pane
-      nmaster = 1
-      -- Percent of screen to increment by when resizing panes
-      delta   = 1/100
-       -- Default proportion of screen occupied by master pane
-      xatio   = 3/5
-      -- notice that withIM, which normally acts on one layout, can also 
-      -- work on a list of layouts (yay recursive data types!)
-      imLayout        =  withIM iratio pidginRoster grid where
-       iratio          = 11%100
---       rosters        = pidginRoster 
-       pidginRoster   = (ClassName "Pidgin") `And` (Role "buddy_list")
-       chatLayout     = Grid
+   resizableTile = ResizableTall nmaster delta xatio []
+   nmaster = 1     -- The default number of windows in the master pane
+   delta   = 1/100 -- Percent of screen to increment by when resizing panes
+   xatio   = 3/5   -- Default proportion of screen occupied by master pane
+                   -- notice that withIM, which normally acts on one layout, can also 
+                   -- work on a list of layouts (yay recursive data types!)
+   imLayout      =  withIM iratio pidginRoster grid where
+    iratio       = 11%100
+    pidginRoster = (ClassName "Pidgin") `And` (Role "buddy_list")
+    chatLayout   = Grid
  
 
 ----------------------------------------------------------------------------------------------       
@@ -218,19 +217,8 @@
  myXPConfig :: XPConfig
  myXPConfig = greenXPConfig { position = CenteredAt 0.5 0.5
                             , font = "xft:roboto condensed:size=14:antialias=true" }
+-- appendFilePrompt :: XPConfig -> FilePath -> X ()
 -- myLogHook
-
-  --------------------------------------------------------------------------------------------------------
- -- LogHook Pretty Print Config
- --------------------------------------------------------------------------------------------------------
- -- dynamicLogXinerama :: X ()
- --  dynamicLogXinerama = withWindowSet $ io . putStrLn . XMonad.Hooks.DynamicLog.pprWindowSetXinerama
- -- pprWindowSetXinerama :: WindowSet -> String
- --  pprWindowSetXinerama ws = "[" ++ unwords onscreen ++ "] " ++ unwords offscreen
- --   where onscreen  = map (W.tag . W.workspace)
- --                        . sortBy (comparing W.screen) $ W.current ws : W.visible ws
---         offscreen = map W.tag . filter (isJust . W.stack)
---                        . sortBy (comparing W.tag) $ W.hidden ws
 
  myPP = def 
            { 
@@ -239,110 +227,33 @@
            , ppTitle = xmobarColor "green" "" . shorten 20
            , ppSort = mkWsSort getXineramaWsCompare
            --, ppSort = getSortByXineramaPhysicalRule XMonad.Actions.TopicSpace.pprWindowSet myTopicConfig, dynamicLogString . onlyTitle
+
            , ppExtras  = [windowCount]
            --, ppHidden = xmobarColor "#268bd2" ""
            , ppHidden = xmobarColor "#268bd2" "" . wrap "(" ")". noScratchPad
            , ppCurrent = xmobarColor "#e8f40d" "" . wrap "[" "]"
            , ppVisible = wrap "<" ">"
-           , ppLayout            =   (\x -> case x of
-                                     "ResizableTall"        ->      "RTall"
-                                     "IM ResizableTall"     ->      "IM"
-                                     "IM Grid"     ->      "IM"
-                                     "Mirror ResizableTall" ->      "Mir"
-                                     "Full"                 ->      "Full"
-                                     "Simple Float"         ->      "~"
-                                     "Grid"                 ->      "#"
-                                     "Tabbed Simplest"      ->      "Tab"
-                                     "Tall"                 ->      "iX"
-                                     _                      ->      x
-                                     )
+           , ppLayout     =   (\x -> case x of 
+                               "ResizableTall"        ->      "RTall"
+                               "zoomy"                ->      "why"
+                               "IM ResizableTall"     ->      "IM"
+                               "IM Grid"              ->      "IM"
+                               "Mirror ResizableTall" ->      "Mir"
+                               "Full"                 ->      "Full"
+                               "Simple Float"         ->      "~"
+                               "Grid"                 ->      "#"
+                               "Tabbed Simplest"      ->      "Tab"
+                               "Tall"                 ->      "iX"
+                               _                      ->      x
+                               )
            }
            where
 --    -- then define it down here: if the workspace is NSP then print
 --    -- nothing, else print it as-is
             noScratchPad ws = if ws == "NSP" then "" else ws
- -------------------- Support for per-screen xmobars ---------
- -- Some parts of this should be merged into contrib sometime
- getScreens :: IO [Int]
- getScreens = openDisplay "" >>= liftA2 (<*) f closeDisplay
-     where f = fmap (zipWith const [0..]) . getScreenInfo
-
- mergePPOutputs :: [PP -> X String] -> PP -> X String
- mergePPOutputs x pp = fmap (intercalate (ppSep pp)) . sequence . sequence x $ pp
-
- onlyTitle :: PP -> PP
- onlyTitle pp = defaultPP { ppCurrent = const ""
-                          , ppHidden = const ""
-                          , ppVisible = const ""
-                          , ppLayout = ppLayout pp
-                          , ppTitle = ppTitle pp }
-
-
- -------------------- Support for per-screen xmobars ---------
- -- Some parts of this should be merged into contrib sometime
- multiPP :: PP -- ^ The PP to use if the screen is focused
-         -> PP -- ^ The PP to use otherwise
-         -> [Handle] -- ^ Handles for the status bars, in order of increasing X
-                     -- screen number
-         -> X ()
- multiPP = multiPP' dynamicLogString
-
- multiPP' :: (PP -> X String) -> PP -> PP -> [Handle] -> X ()
- multiPP' dynlStr focusPP unfocusPP handles = do
-     state <- get
-     let pickPP :: WorkspaceId -> WriterT (Last XState) X String
-         pickPP ws = do
-             let isFoc = (ws ==) . S.tag . S.workspace . S.current $ windowset state
-             put state{ windowset = S.view ws $ windowset state }
-             out <- lift $ dynlStr $ if isFoc then focusPP else unfocusPP
-             when isFoc $ get >>= tell . Last . Just
-             return out
-     traverse put . getLast
-         =<< execWriterT . (io . zipWithM_ hPutStrLn handles <=< mapM pickPP) . catMaybes
-         =<< mapM screenWorkspace (zipWith const [0..] handles)
-     return ()
-
- myTopicConfig = TopicConfig
-   { topicDirs = M.fromList $
-       [ ("a", "./")
-       , ("haskell", "haskell")
-       , ("xm-conf", ".xmonad")
-       , ("xme", "wip/x11-wm/xmonad/extras/xmonad-extras/XMonad")
-       , ("xm", "wip/x11-wm/xmonad/core/xmonad")
-       , ("xmc", "wip/x11-wm/xmonad/contrib/XMonadContrib/XMonad")
-       , ("xmobar", "wip/x11-wm/xmobar")
-       , ("movie", "media/movie")
-       , ("music", "media/music")
-       , ("doc", "doc")
-       , ("pdf", "ref")
-       , ("gitit", "wip/gitit")
-       , ("gimp", "./")
-       , ("wip", "wip")
-       ]
-   , defaultTopicAction = const $ spawnShell >*> 2
-   , defaultTopic = "a"
-   , maxTopicHistory = 10
-   , topicActions = M.fromList $
-       [ ("xm-conf", spawnShellIn ".xmonad/lib/XMonad/Layout" >>
-                         spawn "urxvt -e vim ~/.xmonad/xmonad.hs")
-        , ("xmc"    , spawnShell >*> 2)
-        , ("xmobar" , spawnShellIn "wip/x11-wm/xmobar/Plugins" >*> 2)
-        , ("music"  , spawn "urxvt -e ncmpc -h /home/aavogt/.mpd/socket" >> spawn "export MPD_HOST=192.168.1.2; mpc && urxvt -e ncmpc -h 192.168.1.2")
-        , ("mail"   , spawnOn "mail" "urxvt -e mutt")
-        , ("irc"    , spawnOn "irc" "urxvt --title irc -e ssh engage")
-        , ("web"    , spawnOn "web" "firefox")
-        , ("pdf"    , spawnOn "pdf" "okular")
-        , ("gimp"   , spawnHere "gimp")
-       ]
-   }
-
-
-
 --------------------------------------------------------------------------------------------------------
 -- Varibles
 --------------------------------------------------------------------------------------------------------
- spawnShell = currentTopicDir myTopicConfig >>= spawnShellIn
-
  spawnShellIn dir = do
      -- color <- randomBg' (HSV 255 255)
      t <- asks (terminal . config)
@@ -353,7 +264,6 @@
  myBitmapsDir        = "/home/tgooch/.xmonad/resources"
  myNormalBorderColor = "#1B1D1E"
  myFocusedBorderColor = "#00ffff"
--- Kill zombie dzens before normal xmonad restart
  myRestart = "pkil xmobar; pkill xmobar; pkill stalonetray  && xmonad --recompile && xmonad --restart"
  myTerminal  = "urxvt"
 -- Main
@@ -381,7 +291,7 @@
                 --,logHook = myLogHook h
                 ,logHook = ewmhDesktopsLogHook >> dynamicLogWithPP myPP
                       {
-                       ppOutput = \x -> hPutStrLn xmproc1 x >> hPutStrLn xmproc0 x >> hPutStrLn xmproc2 x
+                       ppOutput = \x -> hPutStrLn xmproc0 x >> hPutStrLn xmproc1 x >> hPutStrLn xmproc2 x
                       }
                 , XMonad.workspaces = myWorkspaces
                 --, logHook = do
@@ -396,26 +306,27 @@
                     --updatePointer (0, 0) (0, 0)
        } `additionalKeys`
        [ 
-         ((mod4Mask .|. shiftMask, xK_z), spawn "xscreensaver-command -lock")
-       , ((controlMask, xK_Print), spawn "sleep 0.5; scrot -s '%Y-%m-%d-%H%M-%S_$wx$h_scrot.png' -e 'mv $f /home/tgooch/images/'")
-       , ((0, xK_Print), spawn "scrot '%Y-%m-%d-%H%M-%S_$wx$h_scrot.png' -e 'mv $f /home/tgooch/images/'")
-       , ((controlMask .|. shiftMask, xK_m), spawn "urxvt -name mutt -e mutt")
-       , ((0, 0x1008ff18), spawn "evolution")
-       , ((shiftMask, xK_Insert), pasteSelection)
-       , ((mod1Mask, xK_q     ), spawn myRestart)
-       , ((mod1Mask, xK_s     ), scratchTerm)
-       , ((mod1Mask, xK_p     ), shellPromptHere myXPConfig)
+         ((mod4Mask .|. shiftMask, xK_z)     , spawn "xscreensaver-command -lock")
+       , ((controlMask, xK_Print)            , spawn "sleep 0.5; scrot -s '%Y-%m-%d-%H%M-%S_$wx$h_scrot.png' -e 'mv $f /home/tgooch/images/'")
+       , ((0, xK_Print)                      , spawn "scrot '%Y-%m-%d-%H%M-%S_$wx$h_scrot.png' -e 'mv $f /home/tgooch/images/'")
+       , ((controlMask .|. shiftMask, xK_m)  , spawn "urxvt -name mutt -e mutt")
+       , ((0, 0x1008ff18)                    , spawn "evolution")
+       , ((shiftMask, xK_Insert)             , pasteSelection)
+       , ((mod1Mask, xK_q     )              , spawn myRestart)
+       , ((mod1Mask, xK_s     )              , scratchTerm)
+       , ((mod1Mask, xK_p     )              , shellPromptHere myXPConfig)
        --, ((mod4Mask, xK_t     ), scratchZoom)
        , ((mod4Mask .|. shiftMask, xK_t     ), scratchZoomMain)
        , ((mod4Mask .|. shiftMask, xK_c     ), scratchChatty)
        --, ((mod4Mask, xK_z     ), scratchZoom3)
-       , ((mod4Mask, xK_a     ), spawn myANG)
+       , ((mod4Mask, xK_a     )              , spawn myANG)
        --, ((mod4Mask .|. shiftMask, xK_x     ), scratchZoom4)
-       , ((mod1Mask, xK_v     ), scratchVPN)
-       -- volume keys
-       , ((0, xF86XK_AudioMute), spawn "pactl set-sink-mute @DEFAULT_SINK@ toggle")
-       , ((0, xF86XK_AudioLowerVolume), spawn "pactl set-sink-volume @DEFAULT_SINK@ -2%")
-       , ((0, xF86XK_AudioRaiseVolume), spawn "pactl set-sink-volume @DEFAULT_SINK@ +2%")
+       , ((mod1Mask, xK_v     )              , scratchVPN)
+       , ((mod4Mask, xK_n     )              , appendFilePrompt myXPConfig "/home/tgooch/xmonadnote")
+       -- volume key
+       , ((0, xF86XK_AudioMute)              , spawn "pactl set-sink-mute @DEFAULT_SINK@ toggle")
+       , ((0, xF86XK_AudioLowerVolume)       , spawn "pactl set-sink-volume @DEFAULT_SINK@ -2%")
+       , ((0, xF86XK_AudioRaiseVolume)       , spawn "pactl set-sink-volume @DEFAULT_SINK@ +2%")
        ]
        where 
         scratchVPN  = namedScratchpadAction myScratchPads "vpnu2"
@@ -423,6 +334,6 @@
         --    scratchZoom = namedScratchpadAction myScratchPads "zoom"
         scratchZoomMain = namedScratchpadAction myScratchPads "zoomMain"
         scratchChatty = namedScratchpadAction myScratchPads "chatty" 
---    scratchZoom3 = namedScratchpadAction myScratchPads "zoomMeeting"
+        --    scratchZoom3 = namedScratchpadAction myScratchPads "zoomMeeting"
         --    scratchZoom4 = namedScratchpadAction myScratchPads "zoomv"
         myANG = "angband -mx11 -- -n8"
