@@ -38,6 +38,7 @@
  import XMonad.Hooks.ManageHelpers
  import XMonad.Hooks.UrgencyHook
  import XMonad.Layout.Grid
+ import XMonad.Layout.Spacing
  import XMonad.Layout.IM
  import XMonad.Layout.LayoutCombinators
 -- import XMonad.Layout.LayoutCombinators (JumpToLayout (..), (|||))
@@ -184,10 +185,10 @@
 -- Set up the Layout Hook
 ----------------------------------------------------------------------------------------------       
 -- myLayout = onWorkspace "4:I" imLayout $ smartBorders $(resizableTile XMonad.Layout.LayoutCombinators.||| Mirror resizableTile XMonad.Layout.LayoutCombinators.||| Full)
- myLayout = smartBorders $(resizableTile XMonad.Layout.LayoutCombinators.||| zoomy XMonad.Layout.LayoutCombinators.||| imLayout XMonad.Layout.LayoutCombinators.||| power XMonad.Layout.LayoutCombinators.||| Grid XMonad.Layout.LayoutCombinators.||| v50 XMonad.Layout.LayoutCombinators.||| h50)
+ myLayout = smartBorders $(resizableTile XMonad.Layout.LayoutCombinators.||| tabbs XMonad.Layout.LayoutCombinators.||| imLayout XMonad.Layout.LayoutCombinators.||| full XMonad.Layout.LayoutCombinators.||| Grid XMonad.Layout.LayoutCombinators.||| v50 XMonad.Layout.LayoutCombinators.||| h50)
   where
-   zoomy         = noBorders (tabbed shrinkText myTabConfig)
-   power         = noBorders (Full)
+   tabbs         = noBorders (tabbed shrinkText myTabConfig)
+   full          = noBorders (Full)
    v50           = TwoPane zdelta zratio
    h50           = Mirror v50
    zdelta        = 3/100
@@ -203,7 +204,7 @@
    imLayout      =  withIM iratio pidginRoster grid where
     iratio       = 11%100
     pidginRoster = (ClassName "Pidgin") `And` (Role "buddy_list")
-    chatLayout   = Grid
+--    chatLayout   = spacing 3 $ Grid
  
 
 ----------------------------------------------------------------------------------------------       
@@ -222,7 +223,8 @@
 ----------------------------------------------------------------------------------------------       
  myPP = def 
            { 
-           ppOrder     = \(ws:_:t:_) -> [ws,t] 
+--           ppOrder     = \(ws:_:t:_) -> [ws,t] 
+           ppOrder     = take 3 . drop 0
            , ppTitle   = xmobarColor "#1ABC9C" "" . shorten 20
            , ppSort    = getSortByXineramaPhysicalRule def
            , ppSep     = "]["
@@ -233,15 +235,13 @@
            , ppUrgent = xmobarColor "red" "yellow"
            , ppLayout  =   (\x -> case x of 
                                "ResizableTall"        ->      "RTall"
-                               "zoomy"                ->      "why"
-                               "IM ResizableTall"     ->      "IM"
-                               "IM Grid"              ->      "IM"
-                               "Mirror ResizableTall" ->      "Mir"
-                               "Full"                 ->      "Full"
-                               "Simple Float"         ->      "~"
-                               "Grid"                 ->      "#"
-                               "Tabbed Simplest"      ->      "Tab"
-                               "Tall"                 ->      "iX"
+                               "Mirror TwoPane"       ->      " h50 "
+                               "TwoPane"              ->      " v50 "
+                               "IM Grid"              ->      " I M "
+                               "Mirror ResizableTall" ->      "Horiz"
+                               "Full"                 ->      "Full "
+                               "Grid"                 ->      "grids"
+                               "Tabbed Simplest"      ->      "tabbs"
                                _                      ->      x
                                )
            }

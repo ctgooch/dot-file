@@ -6,19 +6,15 @@ Config {
                         "xft:roboto condensed:size=12:antialias=true"
                        ,"xft:FontAwesome:pixelsize=16" 
                        ]
---     font =         "xft:Bitstream Vera Sans Mono:size=24:bold:antialias=true"
    , bgColor =      "#1B1D1E"
    , fgColor =      "#00ffff"
    , position =     Top --W L
---   , position =    Left
    , border =       BottomB
    , borderColor =  "#00ffff"
    , iconRoot = "/home/tgooch/.xmonad/resources/dotfiles/.xmonad/dzen2/" -- default: "."
---   , allDesktops = True
-   -- layout
    , sepChar =  "%"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment
-   , template = "<fc=#ebac54>[</fc> %StdinReader% <fc=#ebac54>][</fc> %locks% <fc=#ebac54>][</fc> %default:Master% <fc=#ebac54>][</fc> %multicpu% <fc=#ebac54>][</fc> %memory% <fc=#ebac54>][</fc> %wlp3s0% <fc=#ebac54>]</fc>}{<fc=#ebac54>[</fc>%mpipe%<fc=#ebac54>][</fc>%KOMH%<fc=#ebac54>][ </fc>%date%<fc=#ebac54>]</fc>"
+   , template = "<fc=#ebac54>[</fc> %StdinReader% <fc=#ebac54>][</fc> %locks% <fc=#ebac54>][</fc> %default:Master% <fc=#ebac54>][</fc> %multicpu% <fc=#ebac54>][</fc> %wlp3s0% <fc=#ebac54>]</fc>}{<fc=#ebac54>[</fc>%mpipe%<fc=#ebac54>][</fc>%KOMH%<fc=#ebac54>][ </fc>%date%<fc=#ebac54>]</fc>"
 
    -- general behavior
    , lowerOnStart =     False    -- send to bottom of window stack on start
@@ -43,8 +39,6 @@ Config {
    --   color can be set by enclosing in <fc></fc> tags. For more details
    --   see http://projects.haskell.org/xmobar/#system-monitor-plugins.
    , commands =
-
-        -- weather monitor
         [    
 
 
@@ -72,15 +66,6 @@ Config {
 
         -- stdinread
         , Run StdinReader
-        -- memory usage monitor
-        , Run Memory         [ "--template" ,"<fn=2>\xf1c0</fn><fn=1><usedratio>%</fn>"
-                             , "--Low"      , "20"        -- units: %
-                             , "--High"     , "90"        -- units: %
-                             , "--low"      , "blue"
-                             , "--normal"   , "green"
-                             , "--high"     , "red"
-                             , "-p"         , "3"
-                             ] 10
 
         -- time and date indicator
         --   (%F = y-m-d date, %a = day of week, %T = h:m:s time)
