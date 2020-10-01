@@ -270,7 +270,7 @@
  windowCount = gets $ Just . show . length . S.integrate' . S.stack . S.workspace . S.current . windowset
  warpToCentre = gets (S.screen . S.current . windowset) >>= \x -> warpToScreen x  0.5 0.5
  main = do
-    xmprocS <- spawnPipe "/usr/bin/python ~/newsun.py > /home/tgooch/sun.pipe"
+    xmprocS <- spawnPipe "/usr/bin/python ~/sun.py > /home/tgooch/sun.pipe"
     xmprocX <- spawnPipe "echo 'December 22, 2020 5:02 Solstice' > marquee.pipe"
 -- Yo, DumDum you named the files ignore the -x here, the file names are right for your machines
     xmproc0 <- spawnPipe "xmobar -x0 ~/.xmonad/center.xmobarrc"
