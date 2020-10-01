@@ -125,9 +125,9 @@
         t = (1 - h)/2     -- bottom edge
         l = (1 - w)/2 -- centered left/right
 
---------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
 --manageHook
---------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
 ---- Avoid changing master on new window creation
  avoidMaster :: S.StackSet i l a s sd -> S.StackSet i l a s sd
  avoidMaster = S.modify' $ \c -> case c of
@@ -217,23 +217,21 @@
  myXPConfig :: XPConfig
  myXPConfig = greenXPConfig { position = CenteredAt 0.5 0.5
                             , font = "xft:roboto condensed:size=14:antialias=true" }
--- appendFilePrompt :: XPConfig -> FilePath -> X ()
+----------------------------------------------------------------------------------------------       
 -- myLogHook
-
+----------------------------------------------------------------------------------------------       
  myPP = def 
            { 
-           -- ppOrder = \(ws:_:t:_) -> [ws,t] 
-           ppOrder = \(ws:l:t:_) -> [ws,l,t]
-           , ppTitle = xmobarColor "green" "" . shorten 20
-           , ppSort = mkWsSort getXineramaWsCompare
-           --, ppSort = getSortByXineramaPhysicalRule XMonad.Actions.TopicSpace.pprWindowSet myTopicConfig, dynamicLogString . onlyTitle
-
+           ppOrder     = \(ws:_:t:_) -> [ws,t] 
+           , ppTitle   = xmobarColor "#1ABC9C" "" . shorten 20
+           , ppSort    = getSortByXineramaPhysicalRule def
+           , ppSep     = "]["
            , ppExtras  = [windowCount]
-           --, ppHidden = xmobarColor "#268bd2" ""
-           , ppHidden = xmobarColor "#268bd2" "" . wrap "(" ")". noScratchPad
+           , ppHidden  = xmobarColor "#268bd2" "" . wrap "(" ")". noScratchPad
            , ppCurrent = xmobarColor "#e8f40d" "" . wrap "[" "]"
            , ppVisible = wrap "<" ">"
-           , ppLayout     =   (\x -> case x of 
+           , ppUrgent = xmobarColor "red" "yellow"
+           , ppLayout  =   (\x -> case x of 
                                "ResizableTall"        ->      "RTall"
                                "zoomy"                ->      "why"
                                "IM ResizableTall"     ->      "IM"
@@ -258,14 +256,13 @@
      -- color <- randomBg' (HSV 255 255)
      t <- asks (terminal . config)
      spawnHere $ "cd " ++ dir ++ " && " ++ t -- ++ " -bg " ++ color
-
- myWorkspaces :: [Topic]
  myWorkspaces = ["1:S","2:W","3:M","4:I","5:E","6","7","8","9"]
  myBitmapsDir        = "/home/tgooch/.xmonad/resources"
  myNormalBorderColor = "#1B1D1E"
  myFocusedBorderColor = "#00ffff"
  myRestart = "pkil xmobar; pkill xmobar; pkill stalonetray  && xmonad --recompile && xmonad --restart"
  myTerminal  = "urxvt"
+--------------------------------------------------------------------------------------------------------
 -- Main
 --------------------------------------------------------------------------------------------------------
 -- myppHidden = "#268bd2"
@@ -275,36 +272,27 @@
  main = do
     xmprocS <- spawnPipe "/usr/bin/python ~/newsun.py > /home/tgooch/sun.pipe"
     xmprocX <- spawnPipe "echo 'December 22, 2020 5:02 Solstice' > marquee.pipe"
+-- Yo, DumDum you named the files ignore the -x here, the file names are right for your machines
     xmproc0 <- spawnPipe "xmobar -x0 ~/.xmonad/center.xmobarrc"
     xmproc1 <- spawnPipe "xmobar -x1 ~/.xmonad/right.xmobarrc"
     xmproc2 <- spawnPipe "xmobar -x2 ~/.xmonad/left.xmobarrc"
     barT    <- spawnPipe "stalonetray --dockapp-mode"
     xmonad  $ docks $ withUrgencyHook NoUrgencyHook $ def { 
-                  manageHook = myManageHook -- make sure to include myManageHook definition from above
-                     <+> manageHook def
-                , startupHook = ewmhDesktopsStartup 
-                , layoutHook = avoidStruts (myLayout)
-                , normalBorderColor  = myNormalBorderColor
-                , focusedBorderColor = myFocusedBorderColor
-                , terminal   = myTerminal
-                , handleEventHook = ewmhDesktopsEventHook 
-                --,logHook = myLogHook h
-                ,logHook = ewmhDesktopsLogHook >> dynamicLogWithPP myPP
-                      {
-                       ppOutput = \x -> hPutStrLn xmproc0 x >> hPutStrLn xmproc1 x >> hPutStrLn xmproc2 x
-                      }
-                , XMonad.workspaces = myWorkspaces
-                --, logHook = do
-                --    multiPP'
-                --       (mergePPOutputs [XMonad.Actions.TopicSpace.pprWindowSet myTopicConfig,
-                --                        dynamicLogString . onlyTitle])
-                --       myPP
-                --       myPP{ ppTitle = const ""
-                --           , ppOutput = \x -> hPutStrLn h x >> hPutStrLn xmproc0 x >> hPutStrLn xmproc1 x
-                --           }
-                    --       let 
-                    --updatePointer (0, 0) (0, 0)
-       } `additionalKeys`
+     manageHook = myManageHook -- make sure to include myManageHook definition from above
+        <+> manageHook def
+     , startupHook = ewmhDesktopsStartup 
+     , layoutHook = avoidStruts (myLayout)
+     , normalBorderColor  = myNormalBorderColor
+     , focusedBorderColor = myFocusedBorderColor
+     , terminal   = myTerminal
+     , handleEventHook = ewmhDesktopsEventHook 
+     --,logHook = myLogHook h
+     ,logHook = ewmhDesktopsLogHook >> dynamicLogWithPP  myPP 
+       {
+         ppOutput = \x -> hPutStrLn xmproc0 x >> hPutStrLn xmproc1 x >> hPutStrLn xmproc2 x
+       }
+     , XMonad.workspaces = myWorkspaces
+     } `additionalKeys`
        [ 
          ((mod4Mask .|. shiftMask, xK_z)     , spawn "xscreensaver-command -lock")
        , ((controlMask, xK_Print)            , spawn "sleep 0.5; scrot -s '%Y-%m-%d-%H%M-%S_$wx$h_scrot.png' -e 'mv $f /home/tgooch/images/'")
